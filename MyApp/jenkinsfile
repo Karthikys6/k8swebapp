@@ -1,0 +1,25 @@
+node('slave') {
+  def project = 'karthikys'
+  def app = 'myapp'
+  def service = "${app}-flask"
+  def namespace = 'dev'
+  def imageTag = "${project}/${app}:${env.BUILD_NUMBER}" 
+  
+  // Stage 1: Build FlaskApp Docker Image
+  stage('Build') {
+      sh("docker build -t ${imageTag} .")
+   }
+  
+  // Stage 2: Push the image to Registry Hub
+  stage('Push to hub') {
+      sh("docker push ${imageTag}")
+   }
+   
+   // Stage 3: Deploy to k8s
+   stage('Deploy myapp') {
+      sh("sed -i.bak 's#${project}/${app}:2#${imageTag}#' ./k8s/myapp_deployment.yaml")
+      sh("kubectl apply -f ./k8s/myapp_deployment.yaml")
+      sh("kubectl apply -f ./k8s/myapp_service.yaml")
+      }
+      
+}
