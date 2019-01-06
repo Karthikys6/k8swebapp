@@ -21,7 +21,13 @@ spec:
          - name: jnlp-port
            containerPort: 50000
         volumeMounts:
+            - name: docker-socket
+              mountPath: /var/run/docker.sock
             - name: jenkins-home
               mountPath: /var/jenkins_home
       volumes:
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock
       - name: jenkins-home
+        emptyDir: {}
