@@ -25,12 +25,12 @@ spec:
               mountPath: /var/run/docker.sock
             - name: jenkins-home
               mountPath: /var/jenkins_home
-            securityContext:
-              privileged: true
+        securityContext:
+               privileged: true
       volumes:
       - name: docker-socket
         hostPath:
           path: /var/run/docker.sock
-          type: file
+          type: File
       - name: jenkins-home
         emptyDir: {}
