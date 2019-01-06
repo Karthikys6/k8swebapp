@@ -1,10 +1,10 @@
 ## Continuous Deployment of WebApp in K8s using Jenkins Pipeline
 
-###Pre-requisites
+### Pre-requisites
 minikube
 VirtualBox
 
-###Project Layout
+### Project Layout
 
 ```
 Myproject/
@@ -25,5 +25,4 @@ Myproject/
 
 ```
 
-
-###References
+### References
