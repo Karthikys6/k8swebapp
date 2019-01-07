@@ -12,25 +12,28 @@ volumes: [
     def app = 'myapp'
     def imageTag = "${project}/${app}:${env.BUILD_NUMBER}" 
   
-    // Stage 1: Build FlaskApp Docker Image
-    stage('Build') {
+    // Checkout source and Build FlaskApp Docker Image
+    stage('Checkout and Build') {
+      git url: 'https://github.com/Karthikys6/k8swebapp.git'
       container('docker') {
-        sh("docker build -t ${imageTag} .")
+        sh """
+          cd `pwd`/MyApp
+          docker build -t ${imageTag} .
+          """
      }
      }
   
-    // Stage 2: Push the image to Registry Hub
-    stage('Push to hub') {
-      container('docker') {
-        sh("docker push ${imageTag}")
-     }
-     }
-     // Stage 3: Deploy to k8s
-    stage('Deploy myapp') {
+     // Deploy to k8s
+    stage('Deploy MyApp') {
+       git url: 'https://github.com/Karthikys6/k8swebapp.git'
        container('kubectl') {
-        sh("sed -i.bak 's#${project}/${app}:2#${imageTag}#' ./k8s/myapp_deployment.yaml")
-        sh("kubectl apply -f ./k8s/myapp_deployment.yaml")
-        sh("kubectl apply -f ./k8s/myapp_service.yaml")
+        sh """
+           cd `pwd`/MyApp/k8s
+           sed -i.bak 's#${project}/${app}:2#${imageTag}#' myapp_deployment.yaml
+           kubectl apply -f myapp_deployment.yaml
+           kubectl apply -f myapp_service.yaml
+           echo "WebApp is running on `kubectl get svc/myapp -o=jsonpath='{.spec.ports[*].nodePort}'`" 
+           """
      }    
      } 
 }  
