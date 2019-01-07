@@ -1,4 +1,4 @@
-## Continuous Deployment of WebApp in K8s using Jenkins Pipeline
+## Deployment of WebApp in K8s using Jenkins Pipeline
 
 ### Pre-requisites
 minikube
