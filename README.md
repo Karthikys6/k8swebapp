@@ -55,7 +55,6 @@ kubectl create -f myjenkins_service.yaml
 #### Preparing Jenkins pipeline script for WebApp (MyApp Directory) Deployment
 * Configure Pod template to run docker and kubectl commands in Slave pods
 * Dockerize WebApp
-* Push the image to Registry
 * Deploy to K8s
 
 #### Configure Jenkins Job to Run Pipeline on 'Slave' Pod
