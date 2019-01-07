@@ -1,0 +1,19 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  replicas: 2
+  strategy:
+   type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: karthikys/myapp:2
+        ports:
+        - name: http-api
+          containerPort: 5000

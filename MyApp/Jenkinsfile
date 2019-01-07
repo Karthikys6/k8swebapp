@@ -1,0 +1,37 @@
+def label = "pod-${UUID.randomUUID().toString()}"
+
+podTemplate(label: label, containers: [
+  containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true),
+  containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.8', command: 'cat', ttyEnabled: true)
+  ],
+volumes: [
+  hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
+]) {
+  node(label) {
+    def project = 'karthikys'
+    def app = 'myapp'
+    def imageTag = "${project}/${app}:${env.BUILD_NUMBER}" 
+  
+    // Stage 1: Build FlaskApp Docker Image
+    stage('Build') {
+      container('docker') {
+        sh("docker build -t ${imageTag} .")
+     }
+     }
+  
+    // Stage 2: Push the image to Registry Hub
+    stage('Push to hub') {
+      container('docker') {
+        sh("docker push ${imageTag}")
+     }
+     }
+     // Stage 3: Deploy to k8s
+    stage('Deploy myapp') {
+       container('kubectl') {
+        sh("sed -i.bak 's#${project}/${app}:2#${imageTag}#' ./k8s/myapp_deployment.yaml")
+        sh("kubectl apply -f ./k8s/myapp_deployment.yaml")
+        sh("kubectl apply -f ./k8s/myapp_service.yaml")
+     }    
+     } 
+}  
+}
